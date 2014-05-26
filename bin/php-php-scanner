@@ -1,0 +1,86 @@
+#!/usr/bin/perl
+
+my @excludes = (
+    'wp-admin/press-this.php' ,
+    'wp-admin/includes/class-pclzip.php' ,
+    'wp-includes/class-json.php' ,
+    'wp-content/plugins/wp-super-cache/wp-cache-phase1.php' ,
+    'wp-includes/class-snoopy.php' ,
+    'wp-includes/class-wp.php' ,
+    'libs/plugins/function.eval.php' ,
+    'wp-admin/js/revisions-js.php' ,
+    'wp-includes/classes.php' ,
+);
+
+use POSIX 'strftime';
+use Cwd qw();
+
+print "#Date: " . date('%Y/%m/%d %H:%M:%S') . "\n";
+print "#Host: " . `hostname`;
+print "# " . Cwd::cwd() . "\n";
+
+
+
+print "#================\n";
+
+my $text = `find -type f -name \\*.php -not -perm 0000 -print0 | xargs -0 egrep -r -n --with-filename '(\\\\x65\\\\x76\\\\x61\\\\x6c|\\WFilesMan\\W|(\\W|^)eval(\\W|\$)|_POST.*base64_decode|\\\\x63\\\\162\\\\x65\\\\141\\\\x74\\\\145)'`;
+
+
+$text =~ s/\r\n/\n/g;
+
+my@lines = split /\n/ , $text;
+my @files = ();
+
+foreach(@lines){
+    s/[\r\n]//g;
+    s/\s+/ /g;
+    my $line = substr($_,0,150);
+    my $file = $line;
+    if( $line =~ m/^\.\/([^\:]*?)\:/i){
+        $file = $1;
+    }
+
+    my $next = 0;
+    foreach my $exclude( @excludes ){
+        if( index( $file , $exclude ) > -1 ){
+            $next ++;
+            last;
+        }
+    }
+
+    if( $next ){
+        next;
+    }
+
+    print $line . "\n";
+
+    my $file = $line;
+    if( $line =~ m/^\.\/([^\:]*?)\:/i){
+        push @files , $1;
+    }
+
+}
+
+sub unique_slice{
+    my @array = @_;
+    my %hash;
+    @hash{@array} = ();
+    return keys %hash;
+}
+
+print "\n#================\n";
+@files = sort &unique_slice( @files );
+foreach(@files){
+    my @filestat = stat $_;
+    print date('%Y/%m/%d %H:%M:%S',$filestat[10]) . " , " . date('%Y/%m/%d %H:%M:%S',$filestat[9]) . " , " . $_ . "\n";
+}
+
+sub date {
+    my $fmt  = shift;
+    my $time = shift;
+    if(!defined($time)){
+        $time = time;
+    }
+    return strftime "%Y/%m/%d %H:%M:%S", localtime($time);
+}
+
