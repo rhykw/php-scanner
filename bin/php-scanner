@@ -14,17 +14,33 @@ my @excludes = (
 
 use POSIX 'strftime';
 use Cwd qw();
+use File::Basename qw();
+use strict;
+
+my $confDirname = File::Basename::dirname(File::Basename::dirname(__FILE__)) . '/etc/';
+my @patterns = ();
+
+open(FH,"< ${confDirname}php-scanner.pattern");
+while(<FH>){
+    s/[\r\n]//g;
+    push @patterns , $_ ;
+}
+close(FH);
+
+my $find = 'find -type f -name \*.php -not -perm 0000 ';
+my $grep = 'egrep -r -n --with-filename ';
+my $cmd  = "$find -print0 | xargs -0 $grep '(";
+
+$cmd .= join( '|' ,  @patterns  ) . ")'";
 
 print "#Date: " . date('%Y/%m/%d %H:%M:%S') . "\n";
 print "#Host: " . `hostname`;
 print "# " . Cwd::cwd() . "\n";
-
-
-
+print "# CMD: " . $cmd . "\n";
 print "#================\n";
 
-my $text = `find -type f -name \\*.php -not -perm 0000 -print0 | xargs -0 egrep -r -n --with-filename '(\\\\x65\\\\x76\\\\x61\\\\x6c|\\WFilesMan\\W|(\\W|^)eval(\\W|\$)|_POST.*base64_decode|\\\\x63\\\\162\\\\x65\\\\141\\\\x74\\\\145)'`;
 
+my $text = `$cmd`;
 
 $text =~ s/\r\n/\n/g;
 
