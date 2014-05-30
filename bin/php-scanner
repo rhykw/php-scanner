@@ -10,6 +10,17 @@ my @excludes = (
     'libs/plugins/function.eval.php' ,
     'wp-admin/js/revisions-js.php' ,
     'wp-includes/classes.php' ,
+    'wp-content/plugins/custom-field-template/custom-field-template.php' ,
+    'wp-content/plugins/all-in-one-seo-pack/JSON.php' ,
+    'wp-content/plugins/jetpack/modules/custom-css/custom-css/preprocessors/scss.inc.php' ,
+    'wp-content/plugins/w3-total-cache/lib/Nusoap/nusoap.php' ,
+    'wp-content/plugins/w3-total-cache/lib/Nusoap/class.soapclient.php' ,
+    'wp-content/plugins/w3-total-cache/lib/W3/PgCache.php' ,
+    'wp-content/plugins/w3-total-cache/lib/W3/Config.php' ,
+    'wp-content/plugins/w3-total-cache/lib/Minify/JSMinPlus.php' ,
+    'wp-content/plugins/w3-total-cache/lib/Minify/FirePHP.php' ,
+    'wp-content/plugins/w3-total-cache/inc/define.php' ,
+    'wp-content/plugins/w3-total-cache/inc/functions/multisite.php' ,
 );
 
 use POSIX 'strftime';
