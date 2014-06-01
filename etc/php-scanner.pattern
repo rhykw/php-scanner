@@ -1,5 +1,5 @@
 \\x65\\x76\\x61\\x6c
 \WFilesMan\W
-(\W|^)eval(\W|$)
+(^|^(?!//).*?(?<!use|preg|directly)\W)eval($|\W)
 _POST.*base64_decode
 \\x63\\162\\x65\\141\\x74\\145
